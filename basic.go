@@ -24,6 +24,8 @@ func NewSmsClient(provider, accessId, accessKey, sign, region, template string, 
 		return GetAliyunClient(accessId, accessKey, sign, region, template)
 	case "tencent":
 		return GetTencentClient(accessId, accessKey, sign, region, template, other)
+	case "volcengine":
+		return GetVolcClient(accessId, accessKey, sign, region, template, other)
 	default:
 		return nil
 	}
