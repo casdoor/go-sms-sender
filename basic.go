@@ -14,17 +14,23 @@
 
 package go_sms_sender
 
+const (
+	Aliyun       = "Aliyun SMS"
+	TencentCloud = "Tencent Cloud SMS"
+	VolcEngine   = "Volc Engine SMS"
+)
+
 type SmsClient interface {
 	SendMessage(param map[string]string, targetPhoneNumber ...string)
 }
 
 func NewSmsClient(provider, accessId, accessKey, sign, region, template string, other ...string) SmsClient {
 	switch provider {
-	case "aliyun":
+	case Aliyun:
 		return GetAliyunClient(accessId, accessKey, sign, region, template)
-	case "tencent":
+	case TencentCloud:
 		return GetTencentClient(accessId, accessKey, sign, region, template, other)
-	case "volcengine":
+	case VolcEngine:
 		return GetVolcClient(accessId, accessKey, sign, region, template, other)
 	default:
 		return nil
