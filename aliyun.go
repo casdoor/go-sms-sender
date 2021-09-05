@@ -17,38 +17,43 @@ package go_sms_sender
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 
 	"github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi"
 )
 
 type AliyunClient struct {
 	template string
-	sign string
-	core *dysmsapi.Client
+	sign     string
+	core     *dysmsapi.Client
 }
 
-func GetAliyunClient(accessId, accessKey, sign, region, template string) *AliyunClient {
+func GetAliyunClient(accessId, accessKey, sign, region, template string) (*AliyunClient, error) {
 	client, err := dysmsapi.NewClientWithAccessKey(region, accessId, accessKey)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return &AliyunClient{
+
+	aliyunClient := &AliyunClient{
 		template: template,
-		core: client,
-		sign: sign,
+		core:     client,
+		sign:     sign,
 	}
+
+	return aliyunClient, nil
 }
 
-func (c *AliyunClient) SendMessage(param map[string]string, targetPhoneNumber ...string) {
+func (c *AliyunClient) SendMessage(param map[string]string, targetPhoneNumber ...string) error {
 	requestParam, err := json.Marshal(param)
 	if err != nil {
-		panic(err)
-	}
-	if len(targetPhoneNumber) < 1 {
-		return
+		return err
 	}
 
-	var phoneNumbers bytes.Buffer
+	if len(targetPhoneNumber) < 1 {
+		return fmt.Errorf("missing parameter: targetPhoneNumber")
+	}
+
+	phoneNumbers := bytes.Buffer{}
 	phoneNumbers.WriteString(targetPhoneNumber[0])
 	for _, s := range targetPhoneNumber[1:] {
 		phoneNumbers.WriteString(",")
@@ -63,7 +68,5 @@ func (c *AliyunClient) SendMessage(param map[string]string, targetPhoneNumber ..
 	request.SignName = c.sign
 
 	_, err = c.core.SendSms(request)
-	if err != nil {
-		panic(err)
-	}
+	return err
 }

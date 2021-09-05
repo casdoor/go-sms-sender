@@ -17,6 +17,8 @@ package go_sms_sender
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+
 	"github.com/volcengine/volc-sdk-golang/service/sms"
 )
 
@@ -27,28 +29,37 @@ type VolcClient struct {
 	smsAccount string
 }
 
-func GetVolcClient(accessId, accessKey, sign, region, templateId string, smsAccount []string) *VolcClient {
+func GetVolcClient(accessId, accessKey, sign, region, templateId string, smsAccount []string) (*VolcClient, error) {
+	if len(smsAccount) < 1 {
+		return nil, fmt.Errorf("missing parameter: smsAccount")
+	}
+
 	client := sms.NewInstance()
 	client.Client.SetAccessKey(accessId)
 	client.Client.SetSecretKey(accessKey)
 	client.SetRegion(region)
-	return &VolcClient{
+
+	volcClient := &VolcClient{
 		core:       client,
 		sign:       sign,
 		template:   templateId,
 		smsAccount: smsAccount[0],
 	}
+
+	return volcClient, nil
 }
 
-func (c *VolcClient) SendMessage(param map[string]string, targetPhoneNumber ...string) {
+func (c *VolcClient) SendMessage(param map[string]string, targetPhoneNumber ...string) error {
 	requestParam, err := json.Marshal(param)
 	if err != nil {
-		panic(err)
+		return err
 	}
+
 	if len(targetPhoneNumber) < 1 {
-		return
+		return fmt.Errorf("missing parameter: targetPhoneNumber")
 	}
-	var phoneNumbers bytes.Buffer
+
+	phoneNumbers := bytes.Buffer{}
 	phoneNumbers.WriteString(targetPhoneNumber[0])
 	for _, s := range targetPhoneNumber[1:] {
 		phoneNumbers.WriteString(",")
@@ -63,7 +74,5 @@ func (c *VolcClient) SendMessage(param map[string]string, targetPhoneNumber ...s
 		PhoneNumbers:  phoneNumbers.String(),
 	}
 	_, _, err = c.core.Send(req)
-	if err != nil {
-		panic(err)
-	}
+	return err
 }

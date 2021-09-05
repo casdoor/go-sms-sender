@@ -15,6 +15,7 @@
 package go_sms_sender
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
@@ -29,9 +30,9 @@ type TencentClient struct {
 	template string
 }
 
-func GetTencentClient(accessId, accessKey, sign, region, templateId string, appId []string) *TencentClient {
+func GetTencentClient(accessId, accessKey, sign, region, templateId string, appId []string) (*TencentClient, error) {
 	if len(appId) < 1 {
-		panic(SmsError{"Tencent SMS Client: missing parameter appId"})
+		return nil, fmt.Errorf("missing parameter: appId")
 	}
 
 	credential := common.NewCredential(accessId, accessKey)
@@ -40,17 +41,20 @@ func GetTencentClient(accessId, accessKey, sign, region, templateId string, appI
 
 	client, err := sms.NewClient(credential, region, config)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return &TencentClient{
+
+	tencentClient := &TencentClient{
 		core:     client,
 		appId:    appId[0],
 		sign:     sign,
 		template: templateId,
 	}
+
+	return tencentClient, nil
 }
 
-func (c *TencentClient) SendMessage(param map[string]string, targetPhoneNumber ...string) {
+func (c *TencentClient) SendMessage(param map[string]string, targetPhoneNumber ...string) error {
 	var paramArray []string
 	index := 0
 	for {
@@ -68,8 +72,7 @@ func (c *TencentClient) SendMessage(param map[string]string, targetPhoneNumber .
 	request.TemplateParamSet = common.StringPtrs(paramArray)
 	request.TemplateID = common.StringPtr(c.template)
 	request.PhoneNumberSet = common.StringPtrs(targetPhoneNumber)
+
 	_, err := c.core.SendSms(request)
-	if err != nil {
-		panic(err)
-	}
+	return err
 }

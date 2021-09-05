@@ -14,6 +14,8 @@
 
 package go_sms_sender
 
+import "fmt"
+
 const (
 	Aliyun       = "Aliyun SMS"
 	TencentCloud = "Tencent Cloud SMS"
@@ -21,10 +23,10 @@ const (
 )
 
 type SmsClient interface {
-	SendMessage(param map[string]string, targetPhoneNumber ...string)
+	SendMessage(param map[string]string, targetPhoneNumber ...string) error
 }
 
-func NewSmsClient(provider, accessId, accessKey, sign, region, template string, other ...string) SmsClient {
+func NewSmsClient(provider, accessId, accessKey, sign, region, template string, other ...string) (SmsClient, error) {
 	switch provider {
 	case Aliyun:
 		return GetAliyunClient(accessId, accessKey, sign, region, template)
@@ -33,14 +35,6 @@ func NewSmsClient(provider, accessId, accessKey, sign, region, template string, 
 	case VolcEngine:
 		return GetVolcClient(accessId, accessKey, sign, region, template, other)
 	default:
-		return nil
+		return nil, fmt.Errorf("unsupported provider: %s", provider)
 	}
-}
-
-type SmsError struct {
-	errorText string
-}
-
-func (e SmsError) Error() string {
-	return e.errorText
 }
