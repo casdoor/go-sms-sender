@@ -26,14 +26,14 @@ type SmsClient interface {
 	SendMessage(param map[string]string, targetPhoneNumber ...string) error
 }
 
-func NewSmsClient(provider, accessId, accessKey, sign, region, template string, other ...string) (SmsClient, error) {
+func NewSmsClient(provider string, accessId string, accessKey string, sign string, template string, other ...string) (SmsClient, error) {
 	switch provider {
 	case Aliyun:
-		return GetAliyunClient(accessId, accessKey, sign, region, template)
+		return GetAliyunClient(accessId, accessKey, sign, template)
 	case TencentCloud:
-		return GetTencentClient(accessId, accessKey, sign, region, template, other)
+		return GetTencentClient(accessId, accessKey, sign, template, other)
 	case VolcEngine:
-		return GetVolcClient(accessId, accessKey, sign, region, template, other)
+		return GetVolcClient(accessId, accessKey, sign, template, other)
 	default:
 		return nil, fmt.Errorf("unsupported provider: %s", provider)
 	}

@@ -28,7 +28,8 @@ type AliyunClient struct {
 	core     *dysmsapi.Client
 }
 
-func GetAliyunClient(accessId, accessKey, sign, region, template string) (*AliyunClient, error) {
+func GetAliyunClient(accessId string, accessKey string, sign string, template string) (*AliyunClient, error) {
+	region := "cn-hangzhou"
 	client, err := dysmsapi.NewClientWithAccessKey(region, accessId, accessKey)
 	if err != nil {
 		return nil, err

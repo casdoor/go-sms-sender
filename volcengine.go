@@ -29,7 +29,7 @@ type VolcClient struct {
 	smsAccount string
 }
 
-func GetVolcClient(accessId, accessKey, sign, region, templateId string, smsAccount []string) (*VolcClient, error) {
+func GetVolcClient(accessId, accessKey, sign, templateId string, smsAccount []string) (*VolcClient, error) {
 	if len(smsAccount) < 1 {
 		return nil, fmt.Errorf("missing parameter: smsAccount")
 	}
@@ -37,7 +37,6 @@ func GetVolcClient(accessId, accessKey, sign, region, templateId string, smsAcco
 	client := sms.NewInstance()
 	client.Client.SetAccessKey(accessId)
 	client.Client.SetSecretKey(accessKey)
-	client.SetRegion(region)
 
 	volcClient := &VolcClient{
 		core:       client,

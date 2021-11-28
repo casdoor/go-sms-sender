@@ -30,7 +30,7 @@ type TencentClient struct {
 	template string
 }
 
-func GetTencentClient(accessId, accessKey, sign, region, templateId string, appId []string) (*TencentClient, error) {
+func GetTencentClient(accessId string, accessKey string, sign string, templateId string, appId []string) (*TencentClient, error) {
 	if len(appId) < 1 {
 		return nil, fmt.Errorf("missing parameter: appId")
 	}
@@ -39,6 +39,7 @@ func GetTencentClient(accessId, accessKey, sign, region, templateId string, appI
 	config := profile.NewClientProfile()
 	config.HttpProfile.ReqMethod = "POST"
 
+	region := "ap-guangzhou"
 	client, err := sms.NewClient(credential, region, config)
 	if err != nil {
 		return nil, err
