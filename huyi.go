@@ -1,3 +1,17 @@
+// Copyright 2021 The casbin Authors. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package go_sms_sender
 
 import (
@@ -54,18 +68,17 @@ func (hc *HuyiClient) SendMessage(param map[string]string, targetPhoneNumber ...
 		v.Set("password", GetMd5String(password))
 		v.Set("mobile", mobile)
 
-		body := strings.NewReader(v.Encode()) //把form数据编下码
+		body := strings.NewReader(v.Encode()) //encode form data
 		client := &http.Client{}
 		req, _ := http.NewRequest("POST", "http://106.ihuyi.com/webservice/sms.php?method=Submit&format=json", body)
 
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
-		//fmt.Printf("%+v\n", req) //看下发送的结构
 
-		resp, err := client.Do(req) //发送
+		resp, err := client.Do(req) // request remote
 		if err != nil {
 			return err
 		}
-		defer resp.Body.Close() //一定要关闭resp.Body
+		defer resp.Body.Close() // ！ close ReadCloser
 		_, err = ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return err
