@@ -21,6 +21,7 @@ const (
 	TencentCloud = "Tencent Cloud SMS"
 	VolcEngine   = "Volc Engine SMS"
 	Huyi         = "Huyi SMS"
+	HuaweiCloud  = "Huawei Cloud SMS"
 )
 
 type SmsClient interface {
@@ -37,6 +38,8 @@ func NewSmsClient(provider string, accessId string, accessKey string, sign strin
 		return GetVolcClient(accessId, accessKey, sign, template, other)
 	case Huyi:
 		return GetHuyiClient(accessId, accessKey, template)
+	case HuaweiCloud:
+		return GetHuaweiClient(accessId, accessKey, sign, template, other)
 	default:
 		return nil, fmt.Errorf("unsupported provider: %s", provider)
 	}
