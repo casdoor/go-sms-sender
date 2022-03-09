@@ -31,12 +31,14 @@ func GetHuaweiClient(accessId string, accessKey string, sign string, template st
 		return nil, fmt.Errorf("missing parameter: apiAddress or sender")
 	}
 
+	apiAddress := fmt.Sprintf("%s/sms/batchSendSms/v1", other[0])
+
 	huaweiClient := &HuaweiClient{
 		accessId:   accessId,
 		accessKey:  accessKey,
 		sign:       sign,
 		template:   template,
-		apiAddress: other[0],
+		apiAddress: apiAddress,
 		sender:     other[1],
 	}
 
