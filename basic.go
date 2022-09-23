@@ -22,8 +22,8 @@ const (
 	VolcEngine   = "Volc Engine SMS"
 	Huyi         = "Huyi SMS"
 	HuaweiCloud  = "Huawei Cloud SMS"
-	MockSms      = "Mock SMS"
 	Twilio       = "Twilio SMS"
+	MockSms      = "Mock SMS"
 )
 
 type SmsClient interface {
@@ -42,10 +42,10 @@ func NewSmsClient(provider string, accessId string, accessKey string, sign strin
 		return GetHuyiClient(accessId, accessKey, template)
 	case HuaweiCloud:
 		return GetHuaweiClient(accessId, accessKey, sign, template, other)
-	case MockSms:
-		return NewMocker(accessId, accessKey, sign, template, other)
 	case Twilio:
 		return GetTwilioClient(accessId, accessKey, template)
+	case MockSms:
+		return NewMocker(accessId, accessKey, sign, template, other)
 	default:
 		return nil, fmt.Errorf("unsupported provider: %s", provider)
 	}
