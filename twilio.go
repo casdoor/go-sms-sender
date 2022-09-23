@@ -16,9 +16,11 @@ package go_sms_sender
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/twilio/twilio-go"
 	openapi "github.com/twilio/twilio-go/rest/api/v2010"
-	"strings"
+
 )
 
 type TwilioClient struct {
