@@ -23,6 +23,7 @@ const (
 	Huyi         = "Huyi SMS"
 	HuaweiCloud  = "Huawei Cloud SMS"
 	MockSms      = "Mock SMS"
+	Twilio       = "Twilio SMS"
 )
 
 type SmsClient interface {
@@ -43,6 +44,8 @@ func NewSmsClient(provider string, accessId string, accessKey string, sign strin
 		return GetHuaweiClient(accessId, accessKey, sign, template, other)
 	case MockSms:
 		return NewMocker(accessId, accessKey, sign, template, other)
+	case Twilio:
+		return GetTwilioClient(accessId, accessKey, template)
 	default:
 		return nil, fmt.Errorf("unsupported provider: %s", provider)
 	}
