@@ -19,6 +19,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 type SmsBaoClient struct {
@@ -57,6 +58,11 @@ func (c *SmsBaoClient) SendMessage(param map[string]string, targetPhoneNumber ..
 
 	smsContent := url.QueryEscape("【" + c.sign + "】" + fmt.Sprintf(c.template, code))
 	for _, mobile := range targetPhoneNumber {
+		if strings.HasPrefix(mobile, "+86") {
+			mobile = mobile[3:]
+		} else if strings.HasPrefix(mobile, "+") {
+			return fmt.Errorf("unsupported country code")
+		}
 		// https://api.smsbao.com/sms?u=USERNAME&p=PASSWORD&g=GOODSID&m=PHONE&c=CONTENT
 		url := fmt.Sprintf("https://api.smsbao.com/sms?u=%s&p=%s&g=%s&m=%s&c=%s", c.username, c.apikey, c.goodsid, mobile, smsContent)
 
