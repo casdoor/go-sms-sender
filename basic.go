@@ -23,6 +23,7 @@ const (
 	Huyi         = "Huyi SMS"
 	HuaweiCloud  = "Huawei Cloud SMS"
 	Twilio       = "Twilio SMS"
+	SmsBao       = "SmsBao SMS"
 	MockSms      = "Mock SMS"
 )
 
@@ -44,6 +45,8 @@ func NewSmsClient(provider string, accessId string, accessKey string, sign strin
 		return GetHuaweiClient(accessId, accessKey, sign, template, other)
 	case Twilio:
 		return GetTwilioClient(accessId, accessKey, template)
+	case SmsBao:
+		return GetSmsbaoClient(accessId, accessKey, sign, template, other)
 	case MockSms:
 		return NewMocker(accessId, accessKey, sign, template, other)
 	default:
