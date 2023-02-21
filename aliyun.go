@@ -68,6 +68,9 @@ func (c *AliyunClient) SendMessage(param map[string]string, targetPhoneNumber ..
 	request.TemplateParam = string(requestParam)
 	request.SignName = c.sign
 
-	_, err = c.core.SendSms(request)
+	response, err := c.core.SendSms(request)
+	if response.Code != "OK" {
+		return fmt.Errorf(response.Message)
+	}
 	return err
 }
