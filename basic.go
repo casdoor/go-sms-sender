@@ -25,6 +25,7 @@ const (
 	Twilio       = "Twilio SMS"
 	SmsBao       = "SmsBao SMS"
 	MockSms      = "Mock SMS"
+	SUBMAIL      = "SUBMAIL SMS"
 )
 
 type SmsClient interface {
@@ -49,6 +50,8 @@ func NewSmsClient(provider string, accessId string, accessKey string, sign strin
 		return GetSmsbaoClient(accessId, accessKey, sign, template, other)
 	case MockSms:
 		return NewMocker(accessId, accessKey, sign, template, other)
+	case SUBMAIL:
+		return GetSubmailClient(accessId, accessKey, template)
 	default:
 		return nil, fmt.Errorf("unsupported provider: %s", provider)
 	}
