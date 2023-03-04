@@ -28,6 +28,11 @@ type AliyunClient struct {
 	core     *dysmsapi.Client
 }
 
+type AliyunResult struct {
+	RequestId string
+	Message   string
+}
+
 func GetAliyunClient(accessId string, accessKey string, sign string, template string) (*AliyunClient, error) {
 	region := "cn-hangzhou"
 	client, err := dysmsapi.NewClientWithAccessKey(region, accessId, accessKey)
@@ -70,7 +75,9 @@ func (c *AliyunClient) SendMessage(param map[string]string, targetPhoneNumber ..
 
 	response, err := c.core.SendSms(request)
 	if response.Code != "OK" {
-		return fmt.Errorf(response.Message)
+		aliyunResult := AliyunResult{}
+		json.Unmarshal(response.GetHttpContentBytes(), &aliyunResult)
+		return fmt.Errorf(aliyunResult.Message)
 	}
 	return err
 }
