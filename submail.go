@@ -80,11 +80,34 @@ func (c *SubmailClient) SendMessage(param map[string]string, targetPhoneNumber .
 	if err != nil {
 		return err
 	}
-	submailResult := SubmailResult{}
 	result, err := ioutil.ReadAll(resp.Body)
-	err = json.Unmarshal(result, &submailResult)
-	if submailResult.Status != "success" {
-		return fmt.Errorf(submailResult.Msg)
+	if err != nil {
+		return err
 	}
+	return handleSubmailResult(result)
+}
+
+func handleSubmailResult(result []byte) error {
+	var submailSuccessResult []SubmailResult
+	err := json.Unmarshal(result, &submailSuccessResult)
+	if err != nil {
+		var submailErrorResult SubmailResult
+		err := json.Unmarshal(result, &submailErrorResult)
+		if err != nil {
+			return err
+		}
+		return fmt.Errorf(submailErrorResult.Msg)
+	}
+
+	errMsg := ""
+	for _, submailResult := range submailSuccessResult {
+		if submailResult.Status != "success" {
+			errMsg = fmt.Sprintf("%s %s", errMsg, submailResult.Msg)
+		}
+	}
+	if errMsg != "" {
+		return fmt.Errorf(errMsg)
+	}
+
 	return err
 }
