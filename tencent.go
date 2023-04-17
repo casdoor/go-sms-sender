@@ -20,7 +20,7 @@ import (
 
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
-	sms "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms/v20190711"
+	sms "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms/v20210111"
 )
 
 type TencentClient struct {
@@ -68,10 +68,10 @@ func (c *TencentClient) SendMessage(param map[string]string, targetPhoneNumber .
 	}
 
 	request := sms.NewSendSmsRequest()
-	request.SmsSdkAppid = common.StringPtr(c.appId)
-	request.Sign = common.StringPtr(c.sign)
+	request.SmsSdkAppId = common.StringPtr(c.appId)
+	request.SignName = common.StringPtr(c.sign)
 	request.TemplateParamSet = common.StringPtrs(paramArray)
-	request.TemplateID = common.StringPtr(c.template)
+	request.TemplateId = common.StringPtr(c.template)
 	request.PhoneNumberSet = common.StringPtrs(targetPhoneNumber)
 
 	_, err := c.core.SendSms(request)
