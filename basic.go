@@ -29,6 +29,7 @@ const (
 	BaiduCloud   = "Baidu Cloud SMS"
 	UCloud       = "UCloud SMS"
 	GCCPAY       = "GCCPAY SMS"
+	Infobip      = "Infobip SMS"
 )
 
 type SmsClient interface {
@@ -61,6 +62,8 @@ func NewSmsClient(provider string, accessId string, accessKey string, sign strin
 		return GetUcloudClient(accessId, accessKey, sign, template, other)
 	case GCCPAY:
 		return GetGCCPAYClient(accessId, accessKey, template)
+	case Infobip:
+		return GetInfobipClient(accessId, accessKey, other)
 	default:
 		return nil, fmt.Errorf("unsupported provider: %s", provider)
 	}
