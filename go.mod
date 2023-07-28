@@ -9,5 +9,6 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.639
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms v1.0.639
 	github.com/twilio/twilio-go v0.26.0
+	github.com/ucloud/ucloud-sdk-go v0.22.4 // indirect
 	github.com/volcengine/volc-sdk-golang v1.0.19
 )

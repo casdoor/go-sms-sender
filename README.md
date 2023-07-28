@@ -9,10 +9,17 @@ This is a powerful open-source library for sending SMS message, which will help 
 
 We support the following SMS providers, welcome to contribute.
 
-- [Aliyun](https://www.aliyun.com/product/sms)
-- [Tencent](https://cloud.tencent.com/document/product/382)
+- [Twilio](https://www.twilio.com)
+- [GCCPAY](https://gccpay.com/)
+- [Infobip](https://www.infobip.com/)
+- [SUBMAIL](https://en.mysubmail.com/)
+- [SmsBao](https://www.smsbao.com/)
+- [Alibaba Cloud](https://www.aliyun.com/product/sms)
+- [Tencent Cloud](https://cloud.tencent.com/document/product/382)
+- [Baidu Cloud](https://cloud.baidu.com/product/sms.html)
 - [VolcEngine](https://www.volcengine.com/product/cloud-sms)
-- [Huawei](https://www.huaweicloud.com/product/msgsms.html)
+- [Huawei Cloud](https://www.huaweicloud.com/product/msgsms.html)
+- [UCloud](https://www.ucloud.cn/site/product/usms.html)
 - [Huyi](https://www.ihuyi.com/)
 
 ## Installation
@@ -51,7 +58,32 @@ SendMessage(param map[string]string, targetPhoneNumber ...string) error
 - `param` the parameters in the SMS template, such as 6 random numbers
 - `targetPhoneNumber` the receivers, such as `+8612345678910`
 
-## Demo
+## Example
+
+### Twilio
+
+Please get necessary information from Twilio [console](https://console.twilio.com/)
+
+```go
+package main
+
+import "github.com/casdoor/go-sms-sender"
+
+func main() {
+	client, err := go_sms_sender.NewSmsClient(go_sms_sender.Twilio, "ACCOUNT_SID", "AUTH_TOKEN", "", "TEMPLATE_CODE")
+	if err != nil {
+		panic(err)
+	}
+
+	params := map[string]string{}
+	params["code"] = "123456"
+	phoneNumer := "+8612345678910"
+	err = client.SendMessage(params, phoneNumer)
+	if err != nil {
+		panic(err)
+	}
+}
+```
 
 ### Aliyun
 
