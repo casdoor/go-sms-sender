@@ -14,6 +14,13 @@ We support the following SMS providers, welcome to contribute.
 - [VolcEngine](https://www.volcengine.com/product/cloud-sms)
 - [Huawei](https://www.huaweicloud.com/product/msgsms.html)
 - [Huyi](https://www.ihuyi.com/)
+- [Twilio](https://www.twilio.com/en-us)
+- [SmsBao](https://www.smsbao.com/)
+- [SUBMAIL](https://en.mysubmail.com/)
+- [Baidu](https://cloud.baidu.com/product/sms.html)
+- [UCloud](https://www.ucloud.cn/site/product/usms.html)
+- [GCCPAY](https://gccpay.com/)
+- [Infobip](https://www.infobip.com/)
 
 ## Installation
 
@@ -51,7 +58,32 @@ SendMessage(param map[string]string, targetPhoneNumber ...string) error
 - `param` the parameters in the SMS template, such as 6 random numbers
 - `targetPhoneNumber` the receivers, such as `+8612345678910`
 
-## Demo
+## Example
+
+### Twilio
+
+Please get necessary information from Twilio [console](https://console.twilio.com/)
+
+```go
+package main
+
+import "github.com/casdoor/go-sms-sender"
+
+func main() {
+	client, err := go_sms_sender.NewSmsClient(go_sms_sender.Twilio, "ACCOUNT_SID", "AUTH_TOKEN", "", "TEMPLATE_CODE")
+	if err != nil {
+		panic(err)
+	}
+
+	params := map[string]string{}
+	params["code"] = "123456"
+	phoneNumer := "+8612345678910"
+	err = client.SendMessage(params, phoneNumer)
+	if err != nil {
+		panic(err)
+	}
+}
+```
 
 ### Aliyun
 
