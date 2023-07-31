@@ -30,6 +30,7 @@ const (
 	UCloud       = "UCloud SMS"
 	GCCPAY       = "GCCPAY SMS"
 	Infobip      = "Infobip SMS"
+	Msg91        = "Msg91 SMS"
 )
 
 type SmsClient interface {
@@ -64,6 +65,8 @@ func NewSmsClient(provider string, accessId string, accessKey string, sign strin
 		return GetGCCPAYClient(accessId, accessKey, template)
 	case Infobip:
 		return GetInfobipClient(accessId, accessKey, other)
+	case Msg91:
+		return GetMsg91Client(accessId, accessKey, sign)
 	default:
 		return nil, fmt.Errorf("unsupported provider: %s", provider)
 	}
