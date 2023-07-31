@@ -93,8 +93,7 @@ func postMsg91SendRequest(url string, payload io.Reader, authKey string) error {
 
 	res, _ := http.DefaultClient.Do(req)
 
-	defer res.Body.Close()
-	_, err := io.ReadAll(res.Body)
+	err := res.Body.Close()
 	if err != nil {
 		return err
 	}
