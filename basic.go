@@ -32,6 +32,7 @@ const (
 	Infobip      = "Infobip SMS"
 	AmazonSNS    = "Amazon SNS SMS"
 	ACS          = "ACS SMS"
+	Msg91        = "Msg91 SMS"
 )
 
 type SmsClient interface {
@@ -70,6 +71,8 @@ func NewSmsClient(provider string, accessId string, accessKey string, sign strin
 		return GetAmazonSNSClient(accessId, accessKey, template, other)
 	case ACS:
 		return GetACSClient(accessId, template, other)
+	case Msg91:
+		return GetMsg91Client(accessId, accessKey, sign)
 	default:
 		return nil, fmt.Errorf("unsupported provider: %s", provider)
 	}
