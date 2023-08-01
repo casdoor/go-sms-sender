@@ -17,22 +17,22 @@ package go_sms_sender
 import "fmt"
 
 const (
-	Aliyun       = "Aliyun SMS"
-	TencentCloud = "Tencent Cloud SMS"
-	VolcEngine   = "Volc Engine SMS"
-	Huyi         = "Huyi SMS"
-	HuaweiCloud  = "Huawei Cloud SMS"
 	Twilio       = "Twilio SMS"
-	SmsBao       = "SmsBao SMS"
-	MockSms      = "Mock SMS"
-	SUBMAIL      = "SUBMAIL SMS"
-	BaiduCloud   = "Baidu Cloud SMS"
-	UCloud       = "UCloud SMS"
+	AmazonSNS    = "Amazon SNS"
+	AzureACS     = "Azure ACS"
+	Msg91        = "Msg91 SMS"
 	GCCPAY       = "GCCPAY SMS"
 	Infobip      = "Infobip SMS"
-	AmazonSNS    = "Amazon SNS SMS"
-	ACS          = "ACS SMS"
-	Msg91        = "Msg91 SMS"
+	SUBMAIL      = "SUBMAIL SMS"
+	SmsBao       = "SmsBao SMS"
+	Aliyun       = "Aliyun SMS"
+	TencentCloud = "Tencent Cloud SMS"
+	BaiduCloud   = "Baidu Cloud SMS"
+	VolcEngine   = "Volc Engine SMS"
+	HuaweiCloud  = "Huawei Cloud SMS"
+	UCloud       = "UCloud SMS"
+	Huyi         = "Huyi SMS"
+	MockSms      = "Mock SMS"
 )
 
 type SmsClient interface {
@@ -41,38 +41,38 @@ type SmsClient interface {
 
 func NewSmsClient(provider string, accessId string, accessKey string, sign string, template string, other ...string) (SmsClient, error) {
 	switch provider {
-	case Aliyun:
-		return GetAliyunClient(accessId, accessKey, sign, template)
-	case TencentCloud:
-		return GetTencentClient(accessId, accessKey, sign, template, other)
-	case VolcEngine:
-		return GetVolcClient(accessId, accessKey, sign, template, other)
-	case Huyi:
-		return GetHuyiClient(accessId, accessKey, template)
-	case HuaweiCloud:
-		return GetHuaweiClient(accessId, accessKey, sign, template, other)
 	case Twilio:
 		return GetTwilioClient(accessId, accessKey, template)
-	case SmsBao:
-		return GetSmsbaoClient(accessId, accessKey, sign, template, other)
-	case MockSms:
-		return NewMocker(accessId, accessKey, sign, template, other)
-	case SUBMAIL:
-		return GetSubmailClient(accessId, accessKey, template)
-	case BaiduCloud:
-		return GetBceClient(accessId, accessKey, sign, template, other)
-	case UCloud:
-		return GetUcloudClient(accessId, accessKey, sign, template, other)
+	case AmazonSNS:
+		return GetAmazonSNSClient(accessId, accessKey, template, other)
+	case AzureACS:
+		return GetACSClient(accessId, template, other)
+	case Msg91:
+		return GetMsg91Client(accessId, accessKey, sign)
 	case GCCPAY:
 		return GetGCCPAYClient(accessId, accessKey, template)
 	case Infobip:
 		return GetInfobipClient(accessId, accessKey, other)
-	case AmazonSNS:
-		return GetAmazonSNSClient(accessId, accessKey, template, other)
-	case ACS:
-		return GetACSClient(accessId, template, other)
-	case Msg91:
-		return GetMsg91Client(accessId, accessKey, sign)
+	case SUBMAIL:
+		return GetSubmailClient(accessId, accessKey, template)
+	case SmsBao:
+		return GetSmsbaoClient(accessId, accessKey, sign, template, other)
+	case Aliyun:
+		return GetAliyunClient(accessId, accessKey, sign, template)
+	case TencentCloud:
+		return GetTencentClient(accessId, accessKey, sign, template, other)
+	case BaiduCloud:
+		return GetBceClient(accessId, accessKey, sign, template, other)
+	case VolcEngine:
+		return GetVolcClient(accessId, accessKey, sign, template, other)
+	case HuaweiCloud:
+		return GetHuaweiClient(accessId, accessKey, sign, template, other)
+	case UCloud:
+		return GetUcloudClient(accessId, accessKey, sign, template, other)
+	case Huyi:
+		return GetHuyiClient(accessId, accessKey, template)
+	case MockSms:
+		return NewMocker(accessId, accessKey, sign, template, other)
 	default:
 		return nil, fmt.Errorf("unsupported provider: %s", provider)
 	}
