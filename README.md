@@ -10,6 +10,8 @@ This is a powerful open-source library for sending SMS message, which will help 
 We support the following SMS providers, welcome to contribute.
 
 - [Twilio](https://www.twilio.com)
+- [Amazon SNS](https://aws.amazon.com/sns/)
+- [Azure ACS](https://azure.microsoft.com/en-us/products/communication-services)
 - [GCCPAY](https://gccpay.com/)
 - [Infobip](https://www.infobip.com/)
 - [SUBMAIL](https://en.mysubmail.com/)
