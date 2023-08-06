@@ -45,12 +45,12 @@ func (m *Msg91Client) SendMessage(param map[string]string, targetPhoneNumber ...
 
 	url := "https://control.msg91.com/api/v5/flow/"
 
-	for i := 1; i < len(targetPhoneNumber); i++ {
-		if strings.HasPrefix(targetPhoneNumber[i], "+") {
-			targetPhoneNumber = targetPhoneNumber[1:]
+	for _, mobile := range targetPhoneNumber {
+		if strings.HasPrefix(mobile, "+") {
+			mobile = mobile[1:]
 		}
 
-		payload, err := buildPayload(m.templateId, m.senderId, "0", targetPhoneNumber[i], param)
+		payload, err := buildPayload(m.templateId, m.senderId, "0", mobile, param)
 		if err != nil {
 			return fmt.Errorf("SMS build payload failed: %v", err)
 		}

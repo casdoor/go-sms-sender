@@ -46,9 +46,9 @@ func NewSmsClient(provider string, accessId string, accessKey string, sign strin
 	case AmazonSNS:
 		return GetAmazonSNSClient(accessId, accessKey, template, other)
 	case AzureACS:
-		return GetACSClient(accessId, template, other)
+		return GetACSClient(accessKey, template, other)
 	case Msg91:
-		return GetMsg91Client(accessId, accessKey, sign)
+		return GetMsg91Client(accessId, accessKey, template)
 	case GCCPAY:
 		return GetGCCPAYClient(accessId, accessKey, template)
 	case Infobip:
