@@ -4,7 +4,6 @@ import (
 	"testing"
 )
 
-/*
 func TestMockerSendMessage(t *testing.T) {
 	client, err := NewSmsClient(MockSms, "", "", "", "")
 	if err != nil {
@@ -16,7 +15,6 @@ func TestMockerSendMessage(t *testing.T) {
 		t.Fatalf("Failed to send message with mock client: %s", err)
 	}
 }
-*/
 
 func TestNetgsmSendMessage(t *testing.T) {
 	provider := Netgsm
