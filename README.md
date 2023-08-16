@@ -172,6 +172,8 @@ To run tests for the `go-sms-sender` library, navigate to the root folder of the
 go test -v ./...
 ```
 
+you can modify mock_test.go file to mock an other tests
+
 ## License
 
 This project is licensed under the [Apache 2.0 license](LICENSE).
