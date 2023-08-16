@@ -39,11 +39,11 @@ go get github.com/casdoor/go-sms-sender
 Different SMS providers need to provide different configuration, but we support a unit API as below to init and get the SMS client.
 
 ```go
-func NewSmsClient(provider string, accessId string, accessKey string, sign string, template string, other ...string) (SmsClient, error) 
+func NewSmsClient(provider string, accessId string, accessKey string, sign string, template string, other ...string) (SmsClient, error)
 ```
 
 - `provider` the name of SMS provider, such as `Aliyun SMS`
-- `accessId` 
+- `accessId`
 - `accessKey`
 - `sign` the sign name
 - `template` the template code
@@ -51,7 +51,7 @@ func NewSmsClient(provider string, accessId string, accessKey string, sign strin
 
 ### Send Message
 
-After initializing the SMS client, we can use the following API to send message. 
+After initializing the SMS client, we can use the following API to send message.
 
 ```go
 SendMessage(param map[string]string, targetPhoneNumber ...string) error
@@ -103,7 +103,7 @@ func main() {
 	}
 
 	params := map[string]string{}
-	params["code"] = "473956" 
+	params["code"] = "473956"
 	phoneNumer := "+8612345678910"
 	err = client.SendMessage(params, phoneNumer)
 	if err != nil {
@@ -126,13 +126,49 @@ func main() {
 	}
 
 	params := map[string]string{}
-	params["0"] = "473956" 
+	params["0"] = "473956"
 	phoneNumer := "+8612345678910"
 	err = client.SendMessage(params, phoneNumer)
 	if err != nil {
 		panic(err)
 	}
 }
+```
+
+### Netgsm
+
+- yourAccessId: is KullaniciAdi
+- yourAccessKey: is Sifre
+- yourSign: is Baslik
+
+```go
+package main
+
+import "github.com/casdoor/go-sms-sender"
+
+func main() {
+	client, err := go_sms_sender.NewSmsClient(go_sms_sender.Netgsm, "yourAccessId", "yourAccessKey", "yourSign", "yourTemplate")
+	if err != nil {
+		panic(err)
+	}
+
+	params := map[string]string{}
+	params["param1"] = "value1"
+	params["param2"] = "value2"
+	phoneNumer := "+8612345678910"
+	err = client.SendMessage(params, phoneNumer)
+	if err != nil {
+		panic(err)
+	}
+}
+```
+
+### Running Tests
+
+To run tests for the `go-sms-sender` library, navigate to the root folder of the project in your terminal and execute the following command:
+
+```sh
+go test -v ./...
 ```
 
 ## License
