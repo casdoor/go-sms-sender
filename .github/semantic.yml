@@ -1,1 +1,3 @@
-enabled: true
+allowMergeCommits:true
+allowRebaseMerge:true
+allowSquashMerge:true
