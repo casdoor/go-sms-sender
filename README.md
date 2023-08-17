@@ -23,7 +23,7 @@ We support the following SMS providers, welcome to contribute.
 - [Huawei Cloud](https://www.huaweicloud.com/product/msgsms.html)
 - [UCloud](https://www.ucloud.cn/site/product/usms.html)
 - [Huyi](https://www.ihuyi.com/)
-- [Netgsm](https://www.netgsm.com.tr/) 🇹🇷 🇹🇷 🇹🇷
+- [Netgsm](https://www.netgsm.com.tr/)
 
 ## Installation
 
