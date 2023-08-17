@@ -5,7 +5,7 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -87,7 +87,7 @@ func (c *NetgsmClient) postXML(url, xmlData string, headers map[string]string) (
 	}
 	defer resp.Body.Close()
 
-	respBody, err := io.ReadAll(resp.Body)
+	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
