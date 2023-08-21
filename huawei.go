@@ -20,12 +20,13 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"fmt"
-	uuid "github.com/satori/go.uuid"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 const WSSE_HEADER_FORMAT = "UsernameToken Username=\"%s\",PasswordDigest=\"%s\",Nonce=\"%s\",Created=\"%s\""
@@ -100,7 +101,7 @@ func buildRequestBody(sender, receiver, templateId, templateParas, statusCallBac
 
 func buildWsseHeader(appKey, appSecret string) string {
 	var cTime = time.Now().Format("2006-01-02T15:04:05Z")
-	var nonce = uuid.NewV4().String()
+	var nonce = uuid.New().String()
 	nonce = strings.ReplaceAll(nonce, "-", "")
 
 	h := sha256.New()
