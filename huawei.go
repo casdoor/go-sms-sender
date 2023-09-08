@@ -121,6 +121,7 @@ func post(url string, param []byte, headers map[string]string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	for key, header := range headers {
 		req.Header.Set(key, header)
 	}
@@ -130,9 +131,11 @@ func post(url string, param []byte, headers map[string]string) (string, error) {
 		return "", err
 	}
 	defer resp.Body.Close()
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
+
 	return string(body), nil
 }
