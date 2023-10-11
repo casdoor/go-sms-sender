@@ -16,11 +16,8 @@ package go_sms_sender
 
 import (
 	"fmt"
-	"strings"
-
 	"github.com/twilio/twilio-go"
 	openapi "github.com/twilio/twilio-go/rest/api/v2010"
-
 )
 
 type TwilioClient struct {
@@ -44,12 +41,14 @@ func GetTwilioClient(accessId string, accessKey string, template string) (*Twili
 
 // SendMessage targetPhoneNumber[0] is the sender's number, so targetPhoneNumber should have at least two parameters
 func (c *TwilioClient) SendMessage(param map[string]string, targetPhoneNumber ...string) error {
-	var err error
-	bodyContent := c.template
-
-	for k, v := range param {
-		bodyContent = strings.Replace(bodyContent, "${"+k+"}", v, -1)
+	code, ok := param["code"]
+	if !ok {
+		return fmt.Errorf("missing parameter: msg code")
 	}
+
+	var err error
+
+	bodyContent := fmt.Sprintf(c.template, code)
 
 	if len(targetPhoneNumber) < 2 {
 		return fmt.Errorf("bad parameter: targetPhoneNumber")
