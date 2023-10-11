@@ -53,7 +53,7 @@ func NewSmsClient(provider string, accessId string, accessKey string, sign strin
 	case GCCPAY:
 		return GetGCCPAYClient(accessId, accessKey, template)
 	case Infobip:
-		return GetInfobipClient(accessId, accessKey, other)
+		return GetInfobipClient(accessId, accessKey, template, other)
 	case SUBMAIL:
 		return GetSubmailClient(accessId, accessKey, template)
 	case SmsBao:

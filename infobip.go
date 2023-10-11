@@ -23,9 +23,10 @@ import (
 )
 
 type InfobipClient struct {
-	baseUrl string
-	sender  string
-	apiKey  string
+	baseUrl  string
+	sender   string
+	apiKey   string
+	template string
 }
 
 type InfobipConfigService struct {
@@ -52,15 +53,16 @@ type Destination struct {
 	To string `json:"to"`
 }
 
-func GetInfobipClient(sender string, apiKey string, baseUrl []string) (*InfobipClient, error) {
+func GetInfobipClient(sender string, apiKey string, template string, baseUrl []string) (*InfobipClient, error) {
 	if len(baseUrl) < 1 {
 		return nil, fmt.Errorf("missing parameter: baseUrl")
 	}
 
 	infobipClient := &InfobipClient{
-		baseUrl: baseUrl[0],
-		sender:  sender,
-		apiKey:  apiKey,
+		baseUrl:  baseUrl[0],
+		sender:   sender,
+		apiKey:   apiKey,
+		template: template,
 	}
 
 	return infobipClient, nil
@@ -86,6 +88,7 @@ func (c *InfobipClient) SendMessage(param map[string]string, targetPhoneNumber .
 	}
 
 	endpoint := fmt.Sprintf("%s/sms/2/text/advanced", c.baseUrl)
+	text := fmt.Sprintf(c.template, code)
 
 	messageData := MessageData{
 		Messages: []Message{
@@ -96,7 +99,7 @@ func (c *InfobipClient) SendMessage(param map[string]string, targetPhoneNumber .
 						To: mobile,
 					},
 				},
-				Text: code,
+				Text: text,
 			},
 		},
 	}
