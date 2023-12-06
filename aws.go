@@ -64,7 +64,7 @@ func (a *AmazonSNSClient) SendMessage(param map[string]string, targetPhoneNumber
 		}
 	}
 
-	for i := 1; i < len(targetPhoneNumber); i++ {
+	for i := 0; i < len(targetPhoneNumber); i++ {
 		_, err := a.svc.Publish(&sns.PublishInput{
 			Message:           &a.template,
 			PhoneNumber:       &targetPhoneNumber[i],
