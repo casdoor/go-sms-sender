@@ -74,10 +74,21 @@ func (c *AliyunClient) SendMessage(param map[string]string, targetPhoneNumber ..
 	request.SignName = c.sign
 
 	response, err := c.core.SendSms(request)
+	if err != nil {
+		return err
+	}
+
 	if response.Code != "OK" {
 		aliyunResult := AliyunResult{}
-		json.Unmarshal(response.GetHttpContentBytes(), &aliyunResult)
-		return fmt.Errorf(aliyunResult.Message)
+		err = json.Unmarshal(response.GetHttpContentBytes(), &aliyunResult)
+		if err != nil {
+			return err
+		}
+
+		if aliyunResult.Message != "" {
+			return fmt.Errorf(aliyunResult.Message)
+		}
 	}
-	return err
+
+	return nil
 }

@@ -21,6 +21,7 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
+	"strings"
 )
 
 type SubmailClient struct {
@@ -36,7 +37,7 @@ type SubmailResult struct {
 	Msg    string `json:"msg"`
 }
 
-func buildSubmailPostdata(param map[string]string, appid string, signature string, project string, targetPhoneNumber []string) map[string]string {
+func buildSubmailPostdata(param map[string]string, appid string, signature string, project string, targetPhoneNumber []string) (map[string]string, error) {
 	multi := make([]map[string]interface{}, 0, 32)
 
 	for _, phoneNumber := range targetPhoneNumber[0:] {
@@ -46,13 +47,17 @@ func buildSubmailPostdata(param map[string]string, appid string, signature strin
 		})
 	}
 
-	m, _ := json.Marshal(multi)
+	m, err := json.Marshal(multi)
+	if err != nil {
+		return nil, err
+	}
+
 	postdata := make(map[string]string)
 	postdata["appid"] = appid
 	postdata["signature"] = signature
 	postdata["project"] = project
 	postdata["multi"] = string(m)
-	return postdata
+	return postdata, nil
 }
 
 func GetSubmailClient(appid string, signature string, project string) (*SubmailClient, error) {
@@ -66,24 +71,36 @@ func GetSubmailClient(appid string, signature string, project string) (*SubmailC
 }
 
 func (c *SubmailClient) SendMessage(param map[string]string, targetPhoneNumber ...string) error {
-	postdata := buildSubmailPostdata(param, c.appid, c.signature, c.project, targetPhoneNumber)
+	postdata, err := buildSubmailPostdata(param, c.appid, c.signature, c.project, targetPhoneNumber)
+	if err != nil {
+		return err
+	}
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 	for key, val := range postdata {
-		_ = writer.WriteField(key, val)
+		err = writer.WriteField(key, val)
+		if err != nil {
+			return err
+		}
 	}
+
 	contentType := writer.FormDataContentType()
-	writer.Close()
+	err = writer.Close()
+	if err != nil {
+		return err
+	}
 
 	resp, err := http.Post(c.api, contentType, body)
 	if err != nil {
 		return err
 	}
+
 	result, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
+
 	return handleSubmailResult(result)
 }
 
@@ -92,22 +109,27 @@ func handleSubmailResult(result []byte) error {
 	err := json.Unmarshal(result, &submailSuccessResult)
 	if err != nil {
 		var submailErrorResult SubmailResult
-		err := json.Unmarshal(result, &submailErrorResult)
+		err = json.Unmarshal(result, &submailErrorResult)
 		if err != nil {
 			return err
 		}
-		return fmt.Errorf(submailErrorResult.Msg)
-	}
 
-	errMsg := ""
-	for _, submailResult := range submailSuccessResult {
-		if submailResult.Status != "success" {
-			errMsg = fmt.Sprintf("%s %s", errMsg, submailResult.Msg)
+		if submailErrorResult.Msg != "" {
+			return fmt.Errorf(submailErrorResult.Msg)
 		}
 	}
-	if errMsg != "" {
-		return fmt.Errorf(errMsg)
+
+	errMsgs := []string{}
+	for _, submailResult := range submailSuccessResult {
+		if submailResult.Status != "success" {
+			errMsg := fmt.Sprintf("%s, %d, %s", submailResult.Status, submailResult.Code, submailResult.Msg)
+			errMsgs = append(errMsgs, errMsg)
+		}
 	}
 
-	return err
+	if len(errMsgs) > 0 {
+		return fmt.Errorf(strings.Join(errMsgs, "|"))
+	}
+
+	return nil
 }
