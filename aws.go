@@ -53,6 +53,13 @@ func GetAmazonSNSClient(accessKeyID string, secretAccessKey string, template str
 }
 
 func (a *AmazonSNSClient) SendMessage(param map[string]string, targetPhoneNumber ...string) error {
+	code, ok := param["code"]
+	if !ok {
+		return fmt.Errorf("missing parameter: code")
+	}
+
+	bodyContent := fmt.Sprintf(a.template, code)
+
 	if len(targetPhoneNumber) < 1 {
 		return fmt.Errorf("missing parameter: targetPhoneNumber")
 	}
@@ -67,7 +74,7 @@ func (a *AmazonSNSClient) SendMessage(param map[string]string, targetPhoneNumber
 
 	for i := 0; i < len(targetPhoneNumber); i++ {
 		_, err := a.svc.Publish(&sns.PublishInput{
-			Message:           &a.template,
+			Message:           &bodyContent,
 			PhoneNumber:       &targetPhoneNumber[i],
 			MessageAttributes: messageAttributes,
 		})
