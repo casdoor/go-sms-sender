@@ -16,6 +16,7 @@ package go_sms_sender
 
 import (
 	"fmt"
+
 	"github.com/ucloud/ucloud-sdk-go/services/usms"
 	"github.com/ucloud/ucloud-sdk-go/ucloud"
 	"github.com/ucloud/ucloud-sdk-go/ucloud/auth"
@@ -59,8 +60,9 @@ func GetUcloudClient(publicKey string, privateKey string, sign string, template 
 func (c *UcloudClient) SendMessage(param map[string]string, targetPhoneNumber ...string) error {
 	code, ok := param["code"]
 	if !ok {
-		return fmt.Errorf("missing parameter: msg code")
+		return fmt.Errorf("missing parameter: code")
 	}
+
 	req := c.core.NewSendUSMSMessageRequest()
 	req.SigContent = ucloud.String(c.Sign)
 	req.TemplateId = ucloud.String(c.Template)

@@ -50,7 +50,7 @@ func GetBceClient(accessId, accessKey, sign, template string, endpoint []string)
 func (c *BaiduClient) SendMessage(param map[string]string, targetPhoneNumber ...string) error {
 	code, ok := param["code"]
 	if !ok {
-		return fmt.Errorf("missing parameter: msg code")
+		return fmt.Errorf("missing parameter: code")
 	}
 
 	phoneNumbers := bytes.Buffer{}

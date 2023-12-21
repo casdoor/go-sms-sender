@@ -71,7 +71,7 @@ func GetInfobipClient(sender string, apiKey string, template string, baseUrl []s
 func (c *InfobipClient) SendMessage(param map[string]string, targetPhoneNumber ...string) error {
 	code, ok := param["code"]
 	if !ok {
-		return fmt.Errorf("missing parameter: msg code")
+		return fmt.Errorf("missing parameter: code")
 	}
 
 	if len(targetPhoneNumber) < 1 {

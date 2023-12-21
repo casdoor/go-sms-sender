@@ -16,6 +16,7 @@ package go_sms_sender
 
 import (
 	"fmt"
+
 	"github.com/twilio/twilio-go"
 	openapi "github.com/twilio/twilio-go/rest/api/v2010"
 )
@@ -43,10 +44,8 @@ func GetTwilioClient(accessId string, accessKey string, template string) (*Twili
 func (c *TwilioClient) SendMessage(param map[string]string, targetPhoneNumber ...string) error {
 	code, ok := param["code"]
 	if !ok {
-		return fmt.Errorf("missing parameter: msg code")
+		return fmt.Errorf("missing parameter: code")
 	}
-
-	var err error
 
 	bodyContent := fmt.Sprintf(c.template, code)
 
@@ -60,12 +59,11 @@ func (c *TwilioClient) SendMessage(param map[string]string, targetPhoneNumber ..
 
 	for i := 1; i < len(targetPhoneNumber); i++ {
 		params.SetTo(targetPhoneNumber[i])
-		_, err = c.core.Api.CreateMessage(params)
-
+		_, err := c.core.Api.CreateMessage(params)
 		if err != nil {
 			return err
 		}
 	}
 
-	return err
+	return nil
 }

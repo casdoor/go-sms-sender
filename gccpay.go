@@ -67,7 +67,7 @@ func Md5(str string) string {
 func (c *GCCPAYClient) SendMessage(param map[string]string, targetPhoneNumber ...string) error {
 	_, ok := param["code"]
 	if !ok {
-		return fmt.Errorf("missing parameter: msg code")
+		return fmt.Errorf("missing parameter: code")
 	}
 
 	if len(targetPhoneNumber) < 1 {

@@ -64,8 +64,9 @@ func GetHuaweiClient(accessId string, accessKey string, sign string, template st
 func (c *HuaweiClient) SendMessage(param map[string]string, targetPhoneNumber ...string) error {
 	code, ok := param["code"]
 	if !ok {
-		return fmt.Errorf("missing parameter: msg code")
+		return fmt.Errorf("missing parameter: code")
 	}
+
 	templateParas := fmt.Sprintf("[\"%s\"]", code)
 
 	phoneNumbers := bytes.Buffer{}

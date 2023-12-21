@@ -49,7 +49,7 @@ func GetSmsbaoClient(username string, apikey string, sign string, template strin
 func (c *SmsBaoClient) SendMessage(param map[string]string, targetPhoneNumber ...string) error {
 	code, ok := param["code"]
 	if !ok {
-		return fmt.Errorf("missing parameter: msg code")
+		return fmt.Errorf("missing parameter: code")
 	}
 
 	if len(targetPhoneNumber) < 1 {
