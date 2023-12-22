@@ -39,7 +39,7 @@ func GetMsg91Client(senderId string, authKey string, templateId string) (*Msg91C
 }
 
 func (m *Msg91Client) SendMessage(param map[string]string, targetPhoneNumber ...string) error {
-	if len(targetPhoneNumber) < 1 {
+	if len(targetPhoneNumber) == 0 {
 		return fmt.Errorf("missing parameter: targetPhoneNumber")
 	}
 
@@ -57,7 +57,7 @@ func (m *Msg91Client) SendMessage(param map[string]string, targetPhoneNumber ...
 
 		err = postMsg91SendRequest(url, strings.NewReader(payload), m.authKey)
 		if err != nil {
-			return fmt.Errorf("send message failed：%v", err)
+			return fmt.Errorf("send message failed: %v", err)
 		}
 	}
 

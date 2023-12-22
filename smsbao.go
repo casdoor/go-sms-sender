@@ -16,7 +16,7 @@ package go_sms_sender
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -32,7 +32,7 @@ type SmsBaoClient struct {
 
 func GetSmsbaoClient(username string, apikey string, sign string, template string, other []string) (*SmsBaoClient, error) {
 	var goodsid string
-	if len(other) < 1 {
+	if len(other) == 0 {
 		goodsid = ""
 	} else {
 		goodsid = other[0]
@@ -52,7 +52,7 @@ func (c *SmsBaoClient) SendMessage(param map[string]string, targetPhoneNumber ..
 		return fmt.Errorf("missing parameter: code")
 	}
 
-	if len(targetPhoneNumber) < 1 {
+	if len(targetPhoneNumber) == 0 {
 		return fmt.Errorf("missing parameter: targetPhoneNumber")
 	}
 
@@ -73,7 +73,7 @@ func (c *SmsBaoClient) SendMessage(param map[string]string, targetPhoneNumber ..
 			return err
 		}
 		defer resp.Body.Close()
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return err
 		}

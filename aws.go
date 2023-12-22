@@ -30,7 +30,7 @@ type AmazonSNSClient struct {
 }
 
 func GetAmazonSNSClient(accessKeyID string, secretAccessKey string, template string, region []string) (*AmazonSNSClient, error) {
-	if len(region) < 1 {
+	if len(region) == 0 {
 		return nil, fmt.Errorf("missing parameter: region")
 	}
 
@@ -60,7 +60,7 @@ func (a *AmazonSNSClient) SendMessage(param map[string]string, targetPhoneNumber
 
 	bodyContent := fmt.Sprintf(a.template, code)
 
-	if len(targetPhoneNumber) < 1 {
+	if len(targetPhoneNumber) == 0 {
 		return fmt.Errorf("missing parameter: targetPhoneNumber")
 	}
 
@@ -78,7 +78,6 @@ func (a *AmazonSNSClient) SendMessage(param map[string]string, targetPhoneNumber
 			PhoneNumber:       &targetPhoneNumber[i],
 			MessageAttributes: messageAttributes,
 		})
-
 		if err != nil {
 			return err
 		}

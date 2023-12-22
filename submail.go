@@ -18,7 +18,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"mime/multipart"
 	"net/http"
 	"strings"
@@ -96,7 +96,7 @@ func (c *SubmailClient) SendMessage(param map[string]string, targetPhoneNumber .
 		return err
 	}
 
-	result, err := ioutil.ReadAll(resp.Body)
+	result, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}

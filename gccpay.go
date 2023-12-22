@@ -70,7 +70,7 @@ func (c *GCCPAYClient) SendMessage(param map[string]string, targetPhoneNumber ..
 		return fmt.Errorf("missing parameter: code")
 	}
 
-	if len(targetPhoneNumber) < 1 {
+	if len(targetPhoneNumber) == 0 {
 		return fmt.Errorf("missing parameter: targetPhoneNumber")
 	}
 

@@ -15,9 +15,9 @@
 package go_sms_sender
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi"
 )
@@ -55,20 +55,13 @@ func (c *AliyunClient) SendMessage(param map[string]string, targetPhoneNumber ..
 		return err
 	}
 
-	if len(targetPhoneNumber) < 1 {
+	if len(targetPhoneNumber) == 0 {
 		return fmt.Errorf("missing parameter: targetPhoneNumber")
-	}
-
-	phoneNumbers := bytes.Buffer{}
-	phoneNumbers.WriteString(targetPhoneNumber[0])
-	for _, s := range targetPhoneNumber[1:] {
-		phoneNumbers.WriteString(",")
-		phoneNumbers.WriteString(s)
 	}
 
 	request := dysmsapi.CreateSendSmsRequest()
 	request.Scheme = "https"
-	request.PhoneNumbers = phoneNumbers.String()
+	request.PhoneNumbers = strings.Join(targetPhoneNumber, ",")
 	request.TemplateCode = c.template
 	request.TemplateParam = string(requestParam)
 	request.SignName = c.sign

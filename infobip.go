@@ -54,7 +54,7 @@ type Destination struct {
 }
 
 func GetInfobipClient(sender string, apiKey string, template string, baseUrl []string) (*InfobipClient, error) {
-	if len(baseUrl) < 1 {
+	if len(baseUrl) == 0 {
 		return nil, fmt.Errorf("missing parameter: baseUrl")
 	}
 
@@ -74,7 +74,7 @@ func (c *InfobipClient) SendMessage(param map[string]string, targetPhoneNumber .
 		return fmt.Errorf("missing parameter: code")
 	}
 
-	if len(targetPhoneNumber) < 1 {
+	if len(targetPhoneNumber) == 0 {
 		return fmt.Errorf("missin parer: trgetPhoneNumber")
 	}
 

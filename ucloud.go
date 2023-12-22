@@ -33,7 +33,7 @@ type UcloudClient struct {
 }
 
 func GetUcloudClient(publicKey string, privateKey string, sign string, template string, projectId []string) (*UcloudClient, error) {
-	if len(projectId) < 1 {
+	if len(projectId) == 0 {
 		return nil, fmt.Errorf("missing parameter: projectId")
 	}
 
@@ -61,6 +61,10 @@ func (c *UcloudClient) SendMessage(param map[string]string, targetPhoneNumber ..
 	code, ok := param["code"]
 	if !ok {
 		return fmt.Errorf("missing parameter: code")
+	}
+
+	if len(targetPhoneNumber) == 0 {
+		return fmt.Errorf("missing parameter: targetPhoneNumber")
 	}
 
 	req := c.core.NewSendUSMSMessageRequest()
