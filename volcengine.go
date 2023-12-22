@@ -68,15 +68,13 @@ func (c *VolcClient) SendMessage(param map[string]string, targetPhoneNumber ...s
 
 	resp, statusCode, err := c.core.Send(req)
 	if err != nil {
-		return fmt.Errorf("send message failed, message:%q", err.Error())
+		return fmt.Errorf("send message failed, error: %q", err.Error())
 	}
-
 	if statusCode < 200 || statusCode > 299 {
-		return fmt.Errorf("send message failed, statusCode:%d", statusCode)
+		return fmt.Errorf("send message failed, statusCode :%d", statusCode)
 	}
-
 	if resp.ResponseMetadata.Error != nil {
-		return fmt.Errorf("send message failed, code:%q, message:%q", resp.ResponseMetadata.Error.Code, resp.ResponseMetadata.Error.Message)
+		return fmt.Errorf("send message failed, code: %q, message: %q", resp.ResponseMetadata.Error.Code, resp.ResponseMetadata.Error.Message)
 	}
 
 	return nil
