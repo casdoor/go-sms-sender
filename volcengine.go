@@ -15,9 +15,9 @@
 package go_sms_sender
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/volcengine/volc-sdk-golang/service/sms"
 )
@@ -58,20 +58,24 @@ func (c *VolcClient) SendMessage(param map[string]string, targetPhoneNumber ...s
 		return fmt.Errorf("missing parameter: targetPhoneNumber")
 	}
 
-	phoneNumbers := bytes.Buffer{}
-	phoneNumbers.WriteString(targetPhoneNumber[0])
-	for _, s := range targetPhoneNumber[1:] {
-		phoneNumbers.WriteString(",")
-		phoneNumbers.WriteString(s)
-	}
-
 	req := &sms.SmsRequest{
 		SmsAccount:    c.smsAccount,
 		Sign:          c.sign,
 		TemplateID:    c.template,
 		TemplateParam: string(requestParam),
-		PhoneNumbers:  phoneNumbers.String(),
+		PhoneNumbers:  strings.Join(targetPhoneNumber, ","),
 	}
-	_, _, err = c.core.Send(req)
-	return err
+
+	resp, statusCode, err := c.core.Send(req)
+	if err != nil {
+		return fmt.Errorf("send message failed, error: %q", err.Error())
+	}
+	if statusCode < 200 || statusCode > 299 {
+		return fmt.Errorf("send message failed, statusCode :%d", statusCode)
+	}
+	if resp.ResponseMetadata.Error != nil {
+		return fmt.Errorf("send message failed, code: %q, message: %q", resp.ResponseMetadata.Error.Code, resp.ResponseMetadata.Error.Message)
+	}
+
+	return nil
 }
