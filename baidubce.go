@@ -15,8 +15,8 @@
 package go_sms_sender
 
 import (
-	"bytes"
 	"fmt"
+	"strings"
 
 	"github.com/baidubce/bce-sdk-go/services/sms"
 	"github.com/baidubce/bce-sdk-go/services/sms/api"
@@ -29,7 +29,7 @@ type BaiduClient struct {
 }
 
 func GetBceClient(accessId, accessKey, sign, template string, endpoint []string) (*BaiduClient, error) {
-	if len(endpoint) < 1 {
+	if len(endpoint) == 0 {
 		return nil, fmt.Errorf("missing parameter: endpoint")
 	}
 
@@ -53,18 +53,15 @@ func (c *BaiduClient) SendMessage(param map[string]string, targetPhoneNumber ...
 		return fmt.Errorf("missing parameter: code")
 	}
 
-	phoneNumbers := bytes.Buffer{}
-	phoneNumbers.WriteString(targetPhoneNumber[0])
-	for _, s := range targetPhoneNumber[1:] {
-		phoneNumbers.WriteString(",")
-		phoneNumbers.WriteString(s)
+	if len(targetPhoneNumber) == 0 {
+		return fmt.Errorf("missing parameter: targetPhoneNumber")
 	}
 
 	contentMap := make(map[string]interface{})
 	contentMap["code"] = code
 
 	sendSmsArgs := &api.SendSmsArgs{
-		Mobile:      phoneNumbers.String(),
+		Mobile:      strings.Join(targetPhoneNumber, ","),
 		SignatureId: c.sign,
 		Template:    c.template,
 		ContentVar:  contentMap,

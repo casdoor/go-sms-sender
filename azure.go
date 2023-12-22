@@ -54,7 +54,7 @@ func GetACSClient(accessToken string, message string, other []string) (*ACSClien
 }
 
 func (a *ACSClient) SendMessage(param map[string]string, targetPhoneNumber ...string) error {
-	if len(targetPhoneNumber) < 1 {
+	if len(targetPhoneNumber) == 0 {
 		return fmt.Errorf("missing parameter: targetPhoneNumber")
 	}
 

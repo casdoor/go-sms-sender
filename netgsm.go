@@ -19,7 +19,7 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -47,8 +47,12 @@ func GetNetgsmClient(accessId, accessKey, sign, template string) (*NetgsmClient,
 	}, nil
 }
 
-func (c *NetgsmClient) SendMessage(param map[string]string, targetPhoneNumbers ...string) error {
-	for _, phoneNumber := range targetPhoneNumbers {
+func (c *NetgsmClient) SendMessage(param map[string]string, targetPhoneNumber ...string) error {
+	if len(targetPhoneNumber) == 0 {
+		return fmt.Errorf("missing parameter: targetPhoneNumber")
+	}
+
+	for _, phoneNumber := range targetPhoneNumber {
 		data := fmt.Sprintf(`
 <mainbody>
    <header>
@@ -101,7 +105,7 @@ func (c *NetgsmClient) postXML(url, xmlData string, headers map[string]string) (
 	}
 	defer resp.Body.Close()
 
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}

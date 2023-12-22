@@ -31,7 +31,7 @@ type TencentClient struct {
 }
 
 func GetTencentClient(accessId string, accessKey string, sign string, templateId string, appId []string) (*TencentClient, error) {
-	if len(appId) < 1 {
+	if len(appId) == 0 {
 		return nil, fmt.Errorf("missing parameter: appId")
 	}
 
@@ -56,6 +56,10 @@ func GetTencentClient(accessId string, accessKey string, sign string, templateId
 }
 
 func (c *TencentClient) SendMessage(param map[string]string, targetPhoneNumber ...string) error {
+	if len(targetPhoneNumber) == 0 {
+		return fmt.Errorf("missing parameter: targetPhoneNumber")
+	}
+
 	var paramArray []string
 	index := 0
 	for {

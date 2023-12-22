@@ -20,7 +20,7 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -29,8 +29,10 @@ import (
 	"github.com/google/uuid"
 )
 
-const WSSE_HEADER_FORMAT = "UsernameToken Username=\"%s\",PasswordDigest=\"%s\",Nonce=\"%s\",Created=\"%s\""
-const AUTH_HEADER_VALUE = "WSSE realm=\"SDP\",profile=\"UsernameToken\",type=\"Appkey\""
+const (
+	WSSE_HEADER_FORMAT = "UsernameToken Username=\"%s\",PasswordDigest=\"%s\",Nonce=\"%s\",Created=\"%s\""
+	AUTH_HEADER_VALUE  = "WSSE realm=\"SDP\",profile=\"UsernameToken\",type=\"Appkey\""
+)
 
 type HuaweiClient struct {
 	accessId   string
@@ -67,16 +69,14 @@ func (c *HuaweiClient) SendMessage(param map[string]string, targetPhoneNumber ..
 		return fmt.Errorf("missing parameter: code")
 	}
 
-	templateParas := fmt.Sprintf("[\"%s\"]", code)
-
-	phoneNumbers := bytes.Buffer{}
-	phoneNumbers.WriteString(targetPhoneNumber[0])
-	for _, s := range targetPhoneNumber[1:] {
-		phoneNumbers.WriteString(",")
-		phoneNumbers.WriteString(s)
+	if len(targetPhoneNumber) == 0 {
+		return fmt.Errorf("missing parameter: targetPhoneNumber")
 	}
 
-	body := buildRequestBody(c.sender, phoneNumbers.String(), c.template, templateParas, "", c.sign)
+	phoneNumbers := strings.Join(targetPhoneNumber, ",")
+	templateParas := fmt.Sprintf("[\"%s\"]", code)
+
+	body := buildRequestBody(c.sender, phoneNumbers, c.template, templateParas, "", c.sign)
 	headers := make(map[string]string)
 	headers["Content-Type"] = "application/x-www-form-urlencoded"
 	headers["Authorization"] = AUTH_HEADER_VALUE
@@ -101,8 +101,8 @@ func buildRequestBody(sender, receiver, templateId, templateParas, statusCallBac
 }
 
 func buildWsseHeader(appKey, appSecret string) string {
-	var cTime = time.Now().Format("2006-01-02T15:04:05Z")
-	var nonce = uuid.New().String()
+	cTime := time.Now().Format("2006-01-02T15:04:05Z")
+	nonce := uuid.New().String()
 	nonce = strings.ReplaceAll(nonce, "-", "")
 
 	h := sha256.New()
@@ -133,7 +133,7 @@ func post(url string, param []byte, headers map[string]string) (string, error) {
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}

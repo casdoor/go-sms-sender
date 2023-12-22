@@ -30,7 +30,7 @@ type VolcClient struct {
 }
 
 func GetVolcClient(accessId, accessKey, sign, templateId string, smsAccount []string) (*VolcClient, error) {
-	if len(smsAccount) < 1 {
+	if len(smsAccount) == 0 {
 		return nil, fmt.Errorf("missing parameter: smsAccount")
 	}
 
@@ -49,13 +49,13 @@ func GetVolcClient(accessId, accessKey, sign, templateId string, smsAccount []st
 }
 
 func (c *VolcClient) SendMessage(param map[string]string, targetPhoneNumber ...string) error {
+	if len(targetPhoneNumber) == 0 {
+		return fmt.Errorf("missing parameter: targetPhoneNumber")
+	}
+
 	requestParam, err := json.Marshal(param)
 	if err != nil {
 		return err
-	}
-
-	if len(targetPhoneNumber) < 1 {
-		return fmt.Errorf("missing parameter: targetPhoneNumber")
 	}
 
 	req := &sms.SmsRequest{
@@ -71,7 +71,7 @@ func (c *VolcClient) SendMessage(param map[string]string, targetPhoneNumber ...s
 		return fmt.Errorf("send message failed, error: %q", err.Error())
 	}
 	if statusCode < 200 || statusCode > 299 {
-		return fmt.Errorf("send message failed, statusCode :%d", statusCode)
+		return fmt.Errorf("send message failed, statusCode: %d", statusCode)
 	}
 	if resp.ResponseMetadata.Error != nil {
 		return fmt.Errorf("send message failed, code: %q, message: %q", resp.ResponseMetadata.Error.Code, resp.ResponseMetadata.Error.Message)

@@ -18,7 +18,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -52,7 +52,7 @@ func (hc *HuyiClient) SendMessage(param map[string]string, targetPhoneNumber ...
 		return fmt.Errorf("missing parameter: code")
 	}
 
-	if len(targetPhoneNumber) < 1 {
+	if len(targetPhoneNumber) == 0 {
 		return fmt.Errorf("missin parer: trgetPhoneNumber")
 	}
 
@@ -68,7 +68,7 @@ func (hc *HuyiClient) SendMessage(param map[string]string, targetPhoneNumber ...
 		v.Set("password", GetMd5String(password))
 		v.Set("mobile", mobile)
 
-		body := strings.NewReader(v.Encode()) //encode form data
+		body := strings.NewReader(v.Encode()) // encode form data
 		client := &http.Client{}
 		req, _ := http.NewRequest("POST", "http://106.ihuyi.com/webservice/sms.php?method=Submit&format=json", body)
 
@@ -79,7 +79,7 @@ func (hc *HuyiClient) SendMessage(param map[string]string, targetPhoneNumber ...
 			return err
 		}
 		defer resp.Body.Close() // ！ close ReadCloser
-		_, err = ioutil.ReadAll(resp.Body)
+		_, err = io.ReadAll(resp.Body)
 		if err != nil {
 			return err
 		}
