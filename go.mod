@@ -1,6 +1,6 @@
-module github.com/casdoor/go-sms-sender
+module github.com/waffle-frame/go-sms-sender
 
-go 1.17
+go 1.21
 
 require (
 	github.com/aliyun/alibaba-cloud-sdk-go v1.62.545
