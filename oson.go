@@ -38,7 +38,7 @@ type OsonClient struct {
 type OsonResponse struct {
 	Status        string    // ok
 	Timestamp     time.Time // 2017-07-07 16:58:12
-	TxnId         string    // f89xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxe0b
+	TxnId         string    // f89xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxe0b
 	MsgId         uint      // 40127
 	SmscMsgId     string    // 45f22479
 	SmscMsgStatus string    // success
