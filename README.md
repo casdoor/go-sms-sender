@@ -24,6 +24,7 @@ We support the following SMS providers, welcome to contribute.
 - [UCloud](https://www.ucloud.cn/site/product/usms.html)
 - [Huyi](https://www.ihuyi.com/)
 - [Netgsm](https://www.netgsm.com.tr/)
+- [Oson Sms](https://osonsms.com/)
 
 ## Installation
 
@@ -163,6 +164,33 @@ func main() {
 	}
 }
 ```
+
+### Oson Sms
+
+- senderId: is `login`
+- secretAccessKey: is `hash`
+- signName: is `from`
+- templateCode: is `message`
+
+```go
+package main
+
+func main() {
+	client, err := go_sms_sender.NewSmsClient(go_sms_senderOsonSms, "senderId", "secretAccessKey", "signName", "templateCode")
+	if err != nil {
+		panic(err)
+	}
+
+	params := map[string]string{}
+	params["code"] = "123456"
+	phoneNumer := "+992123456789"
+	err = client.SendMessage(params, phoneNumer)
+	if err != nil {
+		panic(err)
+	}
+}
+```
+
 
 ### Running Tests
 

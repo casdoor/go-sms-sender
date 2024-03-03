@@ -15,6 +15,8 @@
 package go_sms_sender
 
 import (
+	"crypto/sha256"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -33,6 +35,16 @@ type OsonClient struct {
 	Message          string
 }
 
+type OsonResponse struct {
+	Status        string    // ok
+	Timestamp     time.Time // 2017-07-07 16:58:12
+	TxnId         string    // f89xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxe0b
+	MsgId         uint      // 40127
+	SmscMsgId     string    // 45f22479
+	SmscMsgStatus string    // success
+	SmscMsgParts  string    // 1
+}
+
 func GetOsonClient(senderId, secretAccessHash, sign, message string) (*OsonClient, error) {
 	return &OsonClient{
 		Endpoint:         "https://api.osonsms.com/sendsms_v1.php",
@@ -44,15 +56,26 @@ func GetOsonClient(senderId, secretAccessHash, sign, message string) (*OsonClien
 }
 
 func (c *OsonClient) SendMessage(param map[string]string, targetPhoneNumber ...string) (err error) {
-	// Init http client for make request to sms center.
-	// Set a timeout of 25+ seconds to ensure that the
-	// response from the SMS center has been processed.
+	// Init http client for make request to sms center. Set a timeout of 25+
+	// seconds to ensure that the response from the SMS center has been
+	// processed.
 	client := &http.Client{
 		Timeout: 20 * time.Second,
 	}
 
+	if c.Message == "" {
+		c.Message = fmt.Sprintf("Hello. Your authorization code: %s", param["code"])
+	} else {
+		c.Message += param["code"]
+	}
+
 	txnID := uuid.New()
-	strHash := strings.Join([]string{txnID.String(), c.SenderID, c.Sign, targetPhoneNumber[0], c.SecretAccessHash}, ";")
+	buildStrHash := strings.Join([]string{txnID.String(), c.SenderID, c.Sign, targetPhoneNumber[0], c.SecretAccessHash}, ";")
+
+	hash := sha256.New()
+	hash.Write([]byte(buildStrHash))
+	bs := hash.Sum(nil)
+	strHash := fmt.Sprintf("%x", bs)
 
 	urlLink, err := url.Parse(c.Endpoint)
 	if err != nil {
@@ -79,13 +102,18 @@ func (c *OsonClient) SendMessage(param map[string]string, targetPhoneNumber ...s
 		return
 	}
 
-	result, err := io.ReadAll(resp.Body)
+	resultBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
 
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("sms service returned error status not 200: Status Code: %d Error:%v", resp.StatusCode, fmt.Sprint(result[:]))
+	var result OsonResponse
+	if err = json.Unmarshal(resultBytes, &result); err != nil {
+		return
+	}
+
+	if result.Status != "ok" {
+		return fmt.Errorf("sms service returned error status not 200: Status Code: %d Error: %s", resp.StatusCode, string(resultBytes))
 	}
 
 	return
