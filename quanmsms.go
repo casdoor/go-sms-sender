@@ -14,15 +14,15 @@
 
 package go_sms_sender
 
-// console:  https://dev.quanmwl.com/console
-// The use of SDK is to ensure the use of the latest standards
-
 import (
 	"fmt"
 	"strconv"
 
 	"gitee.com/chengdu-quanming-network/quanmsms-go"
 )
+
+// console:  https://dev.quanmwl.com/console
+// The use of SDK is to ensure the use of the latest standards
 
 type QuanmSMSClient struct {
 	openid     string
