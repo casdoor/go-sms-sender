@@ -13,28 +13,27 @@
 // limitations under the License.
 
 package go_sms_sender
+
 // console:  https://dev.quanmwl.com/console
+// The use of SDK is to ensure the use of the latest standards
 
 import (
 	"fmt"
-	"io"
-	"net/http"
-	"net/url"
-	"strings"
-  "gitee.com/chengdu-quanming-network/quanmsms-go"
+	"strconv"
+
+	"gitee.com/chengdu-quanming-network/quanmsms-go"
 )
 
 type QuanmSMSClient struct {
 	openid     string
 	apikey     string
-	sign       string
 	templateid string
 }
 
-func GetQuanmSMSClient(openid string, apikey string, sign string, templateid string, other []string) (*QuanmSMSClient, error) {
+func GetQuanmSMSClient(openid string, apikey string, templateid string) (*QuanmSMSClient, error) {
 	return &QuanmSMSClient{
-		openid: openid,
-		apikey:   apikey,
+		openid:     openid,
+		apikey:     apikey,
 		templateid: templateid,
 	}, nil
 }
@@ -49,60 +48,57 @@ func (c *QuanmSMSClient) SendMessage(param map[string]string, targetPhoneNumber 
 		return fmt.Errorf("missing parameter: targetPhoneNumber")
 	}
 
-	smsSDK = quanmsms.NewSmsSDK(c.openid, c.apikey, "https")
-  template_args := map[string]interface{}{"code": code}
+	smsSDK := quanmsms.NewSmsSDK(c.openid, c.apikey, "https")
+	template_args := map[string]interface{}{"code": code}
 	for _, tel := range targetPhoneNumber {
-		resp, err := smsSDK.Send(tel, c.templatid, template_args)
-  	if err != nil {
-  		return fmt.Errorf("other error:", err.Error())
-  	}
+		templateidInt64, intErr := strconv.Atoi(c.templateid)
+		if intErr != nil {
+			return fmt.Errorf("template id error")
+		}
+		resp, err := smsSDK.Send(tel, int8(templateidInt64), template_args)
+		if err != nil {
+			return fmt.Errorf("other error:" + err.Error())
+		}
 		switch string(resp.State) {
 		case "201":
-      // 表单信息有误或触发限发机制
-			return fmt.Errorf("Refusal to send due to security reasons")
+			// 表单信息有误或触发限发机制
+			return fmt.Errorf("refusal to send due to security reasons")
 		case "202":
-      // 账户重复
+			// 账户重复
 			return fmt.Errorf("account repeat")
 		case "203":
-      // 服务器异常或限流
+			// 服务器异常或限流
 			return fmt.Errorf("server error,Please try again later")
 		case "205":
-      // 请求不安全
-			return fmt.Errorf("Illegal request")
+			// 请求不安全
+			return fmt.Errorf("illegal request")
 		case "207":
-      // 配额不足
-			return fmt.Errorf("Insufficient balance")
+			// 配额不足
+			return fmt.Errorf("insufficient balance")
 		case "208":
-      // 验签失败
-			return fmt.Errorf("Verification failed")
-		}
+			// 验签失败
+			return fmt.Errorf("verification failed")
 		case "209":
-      // 账户被禁用接口
-			return fmt.Errorf("Insufficient permissions")
-		}
+			// 账户被禁用接口
+			return fmt.Errorf("insufficient permissions")
 		case "210":
-      // 账户被冻结
-			return fmt.Errorf("Account frozen")
-		}
+			// 账户被冻结
+			return fmt.Errorf("account frozen")
 		case "211":
-      // 请求参数超过上限
-			return fmt.Errorf("Parameter too long")
-		}
+			// 请求参数超过上限
+			return fmt.Errorf("parameter too long")
 		case "212":
-      // 权限不足或使用了他人模板
-			return fmt.Errorf("Insufficient permissions or using someone else's template")
-		}
+			// 权限不足或使用了他人模板
+			return fmt.Errorf("insufficient permissions or using someone else's template")
 		case "213":
-      // 调用状态异常
+			// 调用状态异常
 			return fmt.Errorf("status error")
-		}
 		case "215":
-      // 内容受限
-			return fmt.Errorf("Content restricted")
-		}
+			// 内容受限
+			return fmt.Errorf("content restricted")
 		case "216":
-      // 内容违法
-			return fmt.Errorf("Content violation")
+			// 内容违法
+			return fmt.Errorf("content violation")
 		}
 	}
 
