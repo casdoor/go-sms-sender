@@ -14,6 +14,7 @@ We support the following SMS providers, welcome to contribute.
 - [Azure ACS](https://azure.microsoft.com/en-us/products/communication-services)
 - [GCCPAY](https://gccpay.com/)
 - [Infobip](https://www.infobip.com/)
+- [SendCloud](https://www.sendcloud.net/)
 - [SUBMAIL](https://en.mysubmail.com/)
 - [SmsBao](https://www.smsbao.com/)
 - [Alibaba Cloud](https://www.aliyun.com/product/sms)
