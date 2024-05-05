@@ -30,10 +30,10 @@ import (
 
 // SendCloudResponseData ResponseData structure holds the response from SendCloud API.
 type SendCloudResponseData struct {
-	Result     bool   `json:"result"`
-	StatusCode int    `json:"statusCode"`
-	Message    string `json:"message"`
-	Info       string `json:"info"`
+	Result     bool        `json:"result"`
+	StatusCode int         `json:"statusCode"`
+	Message    string      `json:"message"`
+	Info       interface{} `json:"info"`
 }
 
 // SendCloudConfig Config holds the configuration for the SMS sending service.
@@ -58,7 +58,7 @@ func GetSendCloudClient(smsUser string, smsKey string, template string) (*SendCl
 		return nil, fmt.Errorf("template id should be number")
 	}
 
-	msgType, err := strconv.Atoi(template)
+	msgType, err := strconv.Atoi("0")
 	if err != nil {
 		return nil, fmt.Errorf("msgType id should be number")
 	}
@@ -178,8 +178,11 @@ func (client *SendCloudClient) validateSendCloudSms(targetPhoneNumbers []string)
 
 // calculateSignature calculates the signature for the request.
 func calculateSignature(params url.Values, key string) string {
-	sortedParams := params.Encode()
-	signStr := sortedParams + "&key=" + key
+	//fmt.Sprintf("%s&msgType=%s&phone=%s&smsUser=%s&templateId=%s&timestamp=%s&vars=%s")
+	signStr := fmt.Sprintf("%s&msgType=%s&phone=%s&smsUser=%s&templateId=%s&timestamp=%s&vars=%s&%s",
+		key, params.Get("msgType"), params.Get("phone"),
+		params.Get("smsUser"), params.Get("templateId"),
+		params.Get("timestamp"), params.Get("vars"), key)
 	hasher := sha256.New()
 	hasher.Write([]byte(signStr))
 	return hex.EncodeToString(hasher.Sum(nil))
