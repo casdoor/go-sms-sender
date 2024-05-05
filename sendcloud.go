@@ -94,7 +94,7 @@ func (client *SendCloudClient) SendMessage(param map[string]string, targetPhoneN
 	signature := calculateSignature(params, client.SmsKey)
 	params.Set("signature", signature)
 
-	resp, err := http.PostForm(client.Config.SendSMSAPI, params)
+	resp, err := http.PostForm(client.Config.Server+client.Config.SendSMSAPI, params)
 	if err != nil {
 		return fmt.Errorf("failed to send HTTP POST request: %w", err)
 	}
