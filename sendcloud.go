@@ -1,3 +1,17 @@
+// Copyright 2024 The Casdoor Authors. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package go_sms_sender
 
 import (
@@ -14,88 +28,73 @@ import (
 	"time"
 )
 
-// ResponseData structure holds the response from SendCloud API.
-type ResponseData struct {
-	Result     bool   `json:"result"`
-	StatusCode int    `json:"statusCode"`
-	Message    string `json:"message"`
-	Info       string `json:"info"`
+// SendCloudResponseData ResponseData structure holds the response from SendCloud API.
+type SendCloudResponseData struct {
+	Result     bool        `json:"result"`
+	StatusCode int         `json:"statusCode"`
+	Message    string      `json:"message"`
+	Info       interface{} `json:"info"`
 }
 
-// Config holds the configuration for the SMS sending service.
-type Config struct {
+// SendCloudConfig Config holds the configuration for the SMS sending service.
+type SendCloudConfig struct {
 	CharSet      string
 	Server       string
 	SendSMSAPI   string
-	SmsUser      string
-	SmsKey       string
 	MaxReceivers int
 }
 
-// NewConfig creates a new configuration with the provided user and key.
-func NewConfig(smsUser, smsKey string) (*Config, error) {
-	if smsUser == "" {
-		return nil, errors.New("smsUser cannot be empty")
-	}
-	if smsKey == "" {
-		return nil, errors.New("smsKey cannot be empty")
-	}
-
-	return &Config{
-		CharSet:      "utf-8",
-		Server:       "https://api.sendcloud.net",
-		SendSMSAPI:   "/smsapi/send",
-		MaxReceivers: 100,
-		SmsUser:      smsUser,
-		SmsKey:       smsKey,
-	}, nil
-}
-
-// SendCloudSms represents the data required to send an SMS message.
-type SendCloudSms struct {
+type SendCloudClient struct {
+	SmsUser    string
+	SmsKey     string
 	TemplateId int
 	MsgType    int
-	Phone      []string
-	Vars       map[string]string
+	Config     SendCloudConfig
 }
 
-// NewSendCloudSms creates a new SendCloudSms instance with the provided parameters.
-func NewSendCloudSms(templateId, msgType int, phone []string, vars map[string]string) (*SendCloudSms, error) {
-	if templateId <= 0 {
-		return nil, errors.New("templateId must be greater than zero")
+func GetSendCloudClient(smsUser string, smsKey string, template string) (*SendCloudClient, error) {
+	templateId, err := strconv.Atoi(template)
+	if err != nil {
+		return nil, fmt.Errorf("template id should be number")
 	}
-	if msgType < 0 {
-		return nil, errors.New("msgType cannot be negative")
+
+	msgType, err := strconv.Atoi("0")
+	if err != nil {
+		return nil, fmt.Errorf("msgType id should be number")
 	}
-	if len(phone) == 0 {
-		return nil, errors.New("phone cannot be empty")
-	}
-	return &SendCloudSms{
+
+	return &SendCloudClient{
+		SmsUser:    smsUser,
+		SmsKey:     smsKey,
 		TemplateId: templateId,
 		MsgType:    msgType,
-		Phone:      phone,
-		Vars:       vars,
+		Config: SendCloudConfig{
+			CharSet:      "utf-8",
+			Server:       "https://api.sendcloud.net",
+			SendSMSAPI:   "/smsapi/send",
+			MaxReceivers: 100,
+		},
 	}, nil
 }
 
 // SendMessage sends an SMS using SendCloud API.
-func SendMessage(sms SendCloudSms, config Config) error {
-	if err := validateSendCloudSms(sms); err != nil {
+func (client *SendCloudClient) SendMessage(param map[string]string, targetPhoneNumber ...string) error {
+	if err := client.validateSendCloudSms(targetPhoneNumber); err != nil {
 		return fmt.Errorf("failed to send message: %w", err)
 	}
-	if err := validateConfig(config); err != nil {
+	if err := validateConfig(client.Config); err != nil {
 		return fmt.Errorf("failed to send message: %w", err)
 	}
 
-	params, err := prepareParams(sms, config)
+	params, err := client.prepareParams(param, targetPhoneNumber)
 	if err != nil {
 		return fmt.Errorf("failed to send message: %w", err)
 	}
 
-	signature := calculateSignature(params, config.SmsKey)
+	signature := calculateSignature(params, client.SmsKey)
 	params.Set("signature", signature)
 
-	resp, err := http.PostForm(config.SendSMSAPI, params)
+	resp, err := http.PostForm(client.Config.Server+client.Config.SendSMSAPI, params)
 	if err != nil {
 		return fmt.Errorf("failed to send HTTP POST request: %w", err)
 	}
@@ -116,7 +115,7 @@ func SendMessage(sms SendCloudSms, config Config) error {
 		return fmt.Errorf("failed to read response body: %w", err)
 	}
 
-	var responseData ResponseData
+	var responseData SendCloudResponseData
 	if err := json.Unmarshal(body, &responseData); err != nil {
 		return fmt.Errorf("failed to unmarshal response body: %w", err)
 	}
@@ -129,16 +128,16 @@ func SendMessage(sms SendCloudSms, config Config) error {
 }
 
 // prepareParams prepares parameters for sending SMS.
-func prepareParams(sms SendCloudSms, config Config) (url.Values, error) {
+func (client *SendCloudClient) prepareParams(vars map[string]string, targetPhoneNumbers []string) (url.Values, error) {
 	params := url.Values{}
-	params.Set("smsUser", config.SmsUser)
-	params.Set("msgType", strconv.Itoa(sms.MsgType))
-	params.Set("phone", strings.Join(sms.Phone, ","))
-	params.Set("templateId", strconv.Itoa(sms.TemplateId))
+	params.Set("smsUser", client.SmsUser)
+	params.Set("msgType", strconv.Itoa(client.MsgType))
+	params.Set("phone", strings.Join(targetPhoneNumbers, ","))
+	params.Set("templateId", strconv.Itoa(client.TemplateId))
 	params.Set("timestamp", strconv.FormatInt(time.Now().UnixNano()/int64(time.Millisecond), 10))
 
-	if len(sms.Vars) > 0 {
-		varsJSON, err := json.Marshal(sms.Vars)
+	if len(vars) > 0 {
+		varsJSON, err := json.Marshal(vars)
 		if err != nil {
 			return nil, fmt.Errorf("failed to marshal vars: %v", err)
 		}
@@ -149,7 +148,7 @@ func prepareParams(sms SendCloudSms, config Config) (url.Values, error) {
 }
 
 // validateConfig validates the SMS sending configuration.
-func validateConfig(config Config) error {
+func validateConfig(config SendCloudConfig) error {
 	switch {
 	case config.CharSet == "":
 		return errors.New("charSet cannot be empty")
@@ -157,10 +156,6 @@ func validateConfig(config Config) error {
 		return errors.New("server cannot be empty")
 	case config.SendSMSAPI == "":
 		return errors.New("sendSMSAPI cannot be empty")
-	case config.SmsUser == "":
-		return errors.New("smsUser cannot be empty")
-	case config.SmsKey == "":
-		return errors.New("smsKey cannot be empty")
 	case config.MaxReceivers <= 0:
 		return errors.New("maxReceivers must be greater than zero")
 	}
@@ -169,13 +164,13 @@ func validateConfig(config Config) error {
 }
 
 // validateSendCloudSms validates the SendCloudSms data.
-func validateSendCloudSms(sms SendCloudSms) error {
+func (client *SendCloudClient) validateSendCloudSms(targetPhoneNumbers []string) error {
 	switch {
-	case sms.TemplateId == 0:
+	case client.TemplateId == 0:
 		return errors.New("templateId cannot be zero")
-	case sms.MsgType < 0:
+	case client.MsgType < 0:
 		return errors.New("msgType cannot be negative")
-	case len(sms.Phone) == 0:
+	case len(targetPhoneNumbers) == 0:
 		return errors.New("phone cannot be empty")
 	}
 	return nil
@@ -183,8 +178,11 @@ func validateSendCloudSms(sms SendCloudSms) error {
 
 // calculateSignature calculates the signature for the request.
 func calculateSignature(params url.Values, key string) string {
-	sortedParams := params.Encode()
-	signStr := sortedParams + "&key=" + key
+	//fmt.Sprintf("%s&msgType=%s&phone=%s&smsUser=%s&templateId=%s&timestamp=%s&vars=%s")
+	signStr := fmt.Sprintf("%s&msgType=%s&phone=%s&smsUser=%s&templateId=%s&timestamp=%s&vars=%s&%s",
+		key, params.Get("msgType"), params.Get("phone"),
+		params.Get("smsUser"), params.Get("templateId"),
+		params.Get("timestamp"), params.Get("vars"), key)
 	hasher := sha256.New()
 	hasher.Write([]byte(signStr))
 	return hex.EncodeToString(hasher.Sum(nil))
