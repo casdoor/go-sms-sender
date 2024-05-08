@@ -15,6 +15,7 @@ require (
 )
 
 require (
+	github.com/apistd/uni-go-sdk v0.0.2 // indirect
 	github.com/cenkalti/backoff/v4 v4.1.2 // indirect
 	github.com/golang/mock v1.6.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
