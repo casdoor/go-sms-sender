@@ -23,7 +23,6 @@ const (
 	Msg91        = "Msg91 SMS"
 	GCCPAY       = "GCCPAY SMS"
 	Infobip      = "Infobip SMS"
-	SendCloud    = "SendCloud SMS"
 	SUBMAIL      = "SUBMAIL SMS"
 	SmsBao       = "SmsBao SMS"
 	Aliyun       = "Aliyun SMS"
@@ -57,8 +56,6 @@ func NewSmsClient(provider string, accessId string, accessKey string, sign strin
 		return GetGCCPAYClient(accessId, accessKey, template)
 	case Infobip:
 		return GetInfobipClient(accessId, accessKey, template, other)
-	case SendCloud:
-		return GetSendCloudClient(accessId, accessKey, template)
 	case SUBMAIL:
 		return GetSubmailClient(accessId, accessKey, template)
 	case SmsBao:
