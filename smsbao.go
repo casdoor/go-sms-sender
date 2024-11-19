@@ -56,7 +56,12 @@ func (c *SmsBaoClient) SendMessage(param map[string]string, targetPhoneNumber ..
 		return fmt.Errorf("missing parameter: targetPhoneNumber")
 	}
 
-	smsContent := url.QueryEscape("【" + c.sign + "】" + fmt.Sprintf(c.template, code))
+	otpText := code
+	if c.template != "" {
+		otpText = fmt.Sprintf(c.template, code)
+	}
+
+	smsContent := url.QueryEscape("【" + c.sign + "】" + otpText)
 	for _, mobile := range targetPhoneNumber {
 		if strings.HasPrefix(mobile, "+86") {
 			mobile = mobile[3:]

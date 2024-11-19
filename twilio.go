@@ -47,8 +47,10 @@ func (c *TwilioClient) SendMessage(param map[string]string, targetPhoneNumber ..
 		return fmt.Errorf("missing parameter: code")
 	}
 
-	bodyContent := code 
-    if c.template != "" { bodyContent = fmt.Sprintf(c.template, code) }
+	bodyContent := code
+	if c.template != "" {
+		bodyContent = fmt.Sprintf(c.template, code)
+	}
 
 	if len(targetPhoneNumber) < 2 {
 		return fmt.Errorf("bad parameter: targetPhoneNumber")
