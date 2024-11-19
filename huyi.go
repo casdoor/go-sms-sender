@@ -57,7 +57,10 @@ func (hc *HuyiClient) SendMessage(param map[string]string, targetPhoneNumber ...
 	}
 
 	_now := strconv.FormatInt(time.Now().Unix(), 10)
-	smsContent := fmt.Sprintf(hc.template, code)
+	smsContent := code
+	if hc.template != "" {
+		smsContent = fmt.Sprintf(hc.template, code)
+	}
 	v := url.Values{}
 	v.Set("account", hc.appId)
 	v.Set("content", smsContent)

@@ -58,7 +58,10 @@ func (a *AmazonSNSClient) SendMessage(param map[string]string, targetPhoneNumber
 		return fmt.Errorf("missing parameter: code")
 	}
 
-	bodyContent := fmt.Sprintf(a.template, code)
+	bodyContent := code
+	if a.template != "" {
+		bodyContent = fmt.Sprintf(a.template, code)
+	}
 
 	if len(targetPhoneNumber) == 0 {
 		return fmt.Errorf("missing parameter: targetPhoneNumber")

@@ -88,7 +88,10 @@ func (c *InfobipClient) SendMessage(param map[string]string, targetPhoneNumber .
 	}
 
 	endpoint := fmt.Sprintf("%s/sms/2/text/advanced", c.baseUrl)
-	text := fmt.Sprintf(c.template, code)
+	text := code
+	if c.template != "" {
+		text = fmt.Sprintf(c.template, code)
+	}
 
 	messageData := MessageData{
 		Messages: []Message{
