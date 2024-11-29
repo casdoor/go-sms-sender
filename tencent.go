@@ -78,6 +78,12 @@ func (c *TencentClient) SendMessage(param map[string]string, targetPhoneNumber .
 	request.TemplateId = common.StringPtr(c.template)
 	request.PhoneNumberSet = common.StringPtrs(targetPhoneNumber)
 
-	_, err := c.core.SendSms(request)
+	response, err := c.core.SendSms(request)
+	if err != nil {
+		return err
+	}
+	if len(response.Response.SendStatusSet) > 0 && response.Response.SendStatusSet[0].Code != nil && *response.Response.SendStatusSet[0].Code != "Ok" {
+		return fmt.Errorf(*response.Response.SendStatusSet[0].Message)
+	}
 	return err
 }
